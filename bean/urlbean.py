@@ -1,8 +1,9 @@
-#定义服务器和客户端之间传递信息
+# 定义服务器和客户端之间传递信息
 class UrlBase(object):
-    SPLIT = '#'     #消息格式    类名#方法名
+    SPLIT = '#'  # 消息格式    类名#方法名
+
     def __init__(self, url, message, key=None, order='', trytimes=0):
-        #类型数据
+        # 类型数据
         self.__classname = self.__class__.__name__
         self.url = url
         self.message = message
@@ -37,9 +38,9 @@ class UrlBase(object):
         if other and isinstance(other, self.__class__):
             if self.order is None or other.order is None:
                 return True
-            if self.order and other.order and type(self.order)==type(other.order):
-                try: #尝试按数字类型进行比较提升效率
-                    return int(self.order)<int(other.order)
+            if self.order and other.order and type(self.order) == type(other.order):
+                try:  # 尝试按数字类型进行比较提升效率
+                    return int(self.order) < int(other.order)
                 except Exception as e:
                     pass
                 return self.order < other.order
@@ -54,20 +55,20 @@ class UrlBean(UrlBase):
         self.cookies = cookies
 
 if __name__ == '__main__':
-    #测试类
+    # 测试类
     s = set()
 
     u1 = UrlBase('1', 2)
-    u1.setkey(lambda x:True)
+    u1.setkey(lambda x: True)
 
     u2 = UrlBase('1', 2)
-    u2.setkey(lambda x:1)
+    u2.setkey(lambda x: 1)
 
     u3 = UrlBase('1', 2)
-    #u3.setkey(True)
+    # u3.setkey(True)
 
     u4 = UrlBase('1', 2)
-    #u4.setkey(1)
+    # u4.setkey(1)
     s.add(u1)
     s.add(u2)
     s.add(u3)
@@ -76,8 +77,8 @@ if __name__ == '__main__':
     print(u2 in s)
     print(u1 in s)
     print(u3 == u4)
-    #s = set()
-    #l = set(l)
-    #lnew = l.difference(s)
-    #s.update(lnew)
+    # s = set()
+    # l = set(l)
+    # lnew = l.difference(s)
+    # s.update(lnew)
     UrlBase('/', 'getpages', param=1, headers=3, order=2)
