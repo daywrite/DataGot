@@ -1,6 +1,7 @@
 from common.base import *
 from txt.txt import *
 from regex.regex import *
+from util.TextRe import *
 
 # 自运行时调用该程序块
 if __name__ == '__main__':
@@ -63,9 +64,101 @@ class huizhouurl(ParserBase):
 
             for item in resultlist:
                 t = txthelper("D:\\gxd\\one.txt", txtType.a.name)
-                t.write(item)
+                t.write(HuiZhou_Base_Url + item)
 
         print('执行完毕')
+
+    # 解析二级url
+    def gettwourl(self, urlbase):
+        print(urlbase.url)
+        result = requests.get(urlbase.url, headers=URL_REQUEST_headers, timeout=60)
+        if result.status_code == requests.codes.ok:
+            soup = BeautifulSoup(result.content.decode('gbk'), 'html.parser')
+
+            lrcommon = {}
+
+            # 项目基本信息
+            fieldtext = soup.find('div', id="Searchform")
+            for i in HuiZhou_Loop_Metas:
+                lrcommon[i] = TextRe.textcom(fieldtext, i + '：', 'td')
+
+            reStr = txthelper.joinStr(HuiZhou_Data_Metas, lrcommon, '\t')
+            f = txthelper('D:\\gxd\\two1.txt', 'a')
+            f.writealine(reStr)
+
+            # 项目楼栋信息
+            try:
+                trall = soup.findAll('tr', class_='Searchboxx')
+                for tr in trall:
+                    lrbuild = []
+                    for td in tr.findAll('td'):
+                        if td.find('p'):
+                            lrbuild.append(HuiZhou_Base_Url + td.find('a')['href'].strip())
+                        else:
+                            lrbuild.append(td.text)
+                    # 写入文本
+                    f = txthelper('D:\\gxd\\two2.txt', 'a')
+                    f.writealine('\t'.join(lrbuild))
+            except:
+                pass
+
+        print('执行完毕')
+
+    # 解析三级url
+    def getthreeurl(self, urlbase):
+        print(urlbase.url)
+        result = requests.get(urlbase.url, headers=URL_REQUEST_headers, timeout=60)
+        if result.status_code == requests.codes.ok:
+            soup = BeautifulSoup(result.content.decode('gbk'), 'html.parser')
+
+            lrcommon = []
+
+            # 项目基本信息
+            table = soup.find('table', class_="tablelw")
+            for tr in table.findAll('tr')[0:2]:
+                for td in tr.findAll('td'):
+                    lrcommon.append(td.text)
+
+            f = txthelper('D:\\gxd\\three1.txt', 'a')
+            f.writealine('\t'.join(lrcommon))
+
+            # 项目单元信息
+            trall = soup.findAll('tr', class_="a1")
+            floorcount = ''
+            for tr in trall:
+                for td in tr.findAll('td'):
+                    lrUnit = []
+                    div = td.findAll('div')
+                    if len(div) == 1:
+                        floorcount = div[0].text
+                    else:
+                        lrUnit.append(floorcount)
+                        lrUnit.append(div[0].text)
+                        urlcount = re.compile('(\d+,\d+)').findall(str(div[1]))[0]
+                        lrUnit.append((HuiZhou_Base_Url + 'House.jsp?id={0}&lcStr={1}').format(urlcount.split(',')[0],
+                                                                                               urlcount.split(',')[0]))
+
+            # 写入文本
+            f = txthelper('D:\\gxd\\three2.txt', 'a')
+            f.writealine('\t'.join(lrUnit))
+
+    # 解析四级url
+    def getfour(self,urlbase):
+        print(urlbase.url)
+        result = requests.get(urlbase.url, headers=URL_REQUEST_headers, timeout=60)
+        if result.status_code == requests.codes.ok:
+            soup = BeautifulSoup(result.content.decode('gbk'), 'html.parser')
+
+            lrcommon = {}
+
+            # 项目基本信息
+            fieldtext = soup.find('div', class_="Salestable")
+            for i in HuiZhou_Houst_Loop_Metas:
+                lrcommon[i] = TextRe.textcom(fieldtext, i + '：', 'td')
+
+            reStr = txthelper.joinStr(HuiZhou_Houst_Loop_Metas, lrcommon, '\t')
+            f = txthelper('D:\\gxd\\four1.txt', 'a')
+            f.writealine(reStr)
 
     # 解析详细页面信息
     def getitem(self, urlbase):
@@ -113,7 +206,16 @@ class huizhouurl(ParserBase):
 if __name__ == '__main__':
     hz = huizhouurl()
 
-    for i in range(1, 43):
-        ub = UrlBean('http://113.106.199.148/web/nowonsale.jsp?page=' + str(i) + '&projectname=&compname=&address=',
-                     'huizhou#getoneurl')
-        hz.getoneurl(ub)
+    # for i in range(1, 44):
+    #     ub = UrlBean('http://113.106.199.148/web/nowonsale.jsp?page=' + str(i) + '&projectname=&compname=&address=',
+    #                  'huizhou#getoneurl')
+    #     hz.getoneurl(ub)
+    # ub = UrlBean('http://113.106.199.148/web/realestate.jsp?ProjectCode=2009001404', 'huizhou#getoneurl')
+    # hz.gettwourl(ub)
+    # ub = UrlBean('http://113.106.199.148/web/salestable.jsp?buildingcode=00000302&projectcode=2009001404',
+    #              'huizhou#getoneurl')
+    # hz.getthreeurl(ub)
+
+    ub = UrlBean('http://113.106.199.148/web/House.jsp?id=269714&lcStr=0',
+                  'huizhou#getoneurl')
+    hz.getfour(ub)
