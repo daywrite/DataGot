@@ -142,7 +142,7 @@ class huizhouurl(ParserBase):
             f = txthelper('D:\\gxd\\three2.txt', 'a')
             f.writealine('\t'.join(lrUnit))
 
-    # 解析四级url
+    # 解析四级url-房屋信息
     def getfour(self,urlbase):
         print(urlbase.url)
         result = requests.get(urlbase.url, headers=URL_REQUEST_headers, timeout=60)
