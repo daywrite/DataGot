@@ -2,22 +2,30 @@ from common.base import *
 
 
 class txthelper:
-    def __init__(self, path=os.path.dirname(os.getcwd()), type=txtType.w.name, encode='utf8'):
+    def __init__(self, path=os.path.dirname(os.getcwd()),name='content.txt', type=txtType.w.name, encode='utf8'):
         self.path = path
         self.type = type
         self.encode = encode
 
+        if not os.path.exists(path):
+            os.makedirs(path)
+        self.txt=open(self.path+name, self.type, encoding=self.encode)
+
+    def open(self):
+        return self.txt
+
     def write(self, strline):
-        txtFile = open(self.path, self.type, encoding=self.encode)
+        txtFile = self.txt
         txtFile.write(strline)
         txtFile.write('\n')
-        txtFile.close()
 
     def writealine(self, strline):
-        txtFile = open(self.path, self.type, encoding=self.encode)
+        txtFile = self.txt
         txtFile.write(strline)
         txtFile.write('\n')
-        txtFile.close()
+
+    def close(self):
+        self.txt.close()
 
     @staticmethod
     def joinStr(metadatas, datas, charStr):
@@ -33,3 +41,4 @@ if __name__ == '__main__':
     f = txthelper('D:\\gxd\\test.txt', 'a')
     f.writealine(reStr)
     f.writealine(reStr)
+    f.close()

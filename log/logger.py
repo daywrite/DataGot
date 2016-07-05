@@ -1,12 +1,12 @@
-import logging
-from logging.handlers import TimedRotatingFileHandler
 import sys, os
-
 return_path = os.path.dirname(os.getcwd())
 sys.path.append(return_path)
 
+import logging
+from logging.handlers import TimedRotatingFileHandler
 from log.message import *
 
+# 日志路径存储
 logpath = os.path.split(os.path.realpath(__file__))[0].split(':')[0] + ':\\gxd\\log'
 if not os.path.exists(logpath):
     os.makedirs(logpath)
