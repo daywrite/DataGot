@@ -16,4 +16,8 @@ class TextRe:
             result = ''
 
         finally:
-            return result
+            return result.replace('\r','').replace('\n','').replace('\t','').replace('\xa0','')
+
+    @classmethod
+    def replace(cls,str):
+        return str.replace('\r','').replace('\n','').replace('\t','').replace('\xa0','')
